@@ -25,6 +25,15 @@ export class AppComponent implements OnInit {
   canvas: any;
   inputSlot = null;
   outputSlot = null;
+
+  get connections() {
+    return this.graphNodes.reduce((connections, node) => {
+      console.log(node.connections);
+      return [].concat(connections.concat(...node.connections));
+    },
+    []);
+  }
+
   get selectedNode() {
     return [this.inputSlot, this.outputSlot].filter(s => s).map(s => s.node);
   }
@@ -57,18 +66,8 @@ export class AppComponent implements OnInit {
     return false;
   }
 
-  connect() {
-    keyboard.outputs[0].connectTo(major.inputs[0]);
-    major.outputs[0].connectTo(keyboardOutput.inputs[0]);
-    major.outputs[0].connectTo(simpleSynth.inputs[0]);
-  }
-  disconnect() {
-    // simpleSynth.disconnect();
-    // major.disconnect();
-  }
-
   debug() {
-    console.log(this, this.graph, this.canvas);
+    console.log(this, this.connections);
   }
 
   ngOnInit() {

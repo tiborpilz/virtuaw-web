@@ -1,6 +1,7 @@
 <!--The content below is only a placeholder and can be replaced.-->
 <div>
   <app-keyboard [onTrigger]="triggerSynth"></app-keyboard>
+  <button (click)="debug()">Debug</button>
   <div class="graph-container">
     <app-graph-node
       *ngFor="let graphNode of graphNodes"

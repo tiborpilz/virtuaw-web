@@ -1,7 +1,4 @@
 import Tone from 'tone';
-import { LGraphNode } from 'litegraph.js';
-
-
 
 export class NodeSocket<T> {
   constructor(
@@ -88,7 +85,7 @@ export class Node {
   }
 
   get connections() {
-    const inputConnections = this.inputs.map(input => input.connection);
+    const inputConnections = this.inputs.filter(input => input.connection).map(input => input.connection);
     const outputConnections = this.outputs.reduce((connections, output) => {
       return connections.concat(output.connections);
     }, []);
