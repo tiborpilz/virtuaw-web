@@ -1,35 +1,59 @@
 import Tone from 'tone';
+import { LGraphNode } from 'litegraph.js';
 
-export class NodeInput<I> {
+
+
+export class NodeSocket<T> {
   constructor(
     public name: string = 'Input',
     public node: Node,
-    public defaultValue: I
-  ) {
-    this.value = defaultValue;
-  }
-  connection?: NodeConnection<I>;
-  value: I;
+    public baseType: string = 'string',
+    public additionalInfo?: object,
+  ) { }
 
-  setValue(value) {
-    this.value = value;
-    this.node.update();
+  get title() {
+    return this.name;
   }
 }
 
-export type ProcessOutput<O> = (inputs: NodeInput<any>[]) => O;
-export class NodeOutput<O> {
+export class NodeInput<T> extends NodeSocket<T> {
+  constructor(
+    public name: string = 'Input',
+    public node: Node,
+    public defaultValue: T,
+    public update: (input: NodeInput<T>, ...rest) => void,
+    public baseType: string = typeof(defaultValue),
+    public additionalInfo: object = {}
+  ) {
+    super(name, node, baseType, additionalInfo);
+    this.value = defaultValue;
+  }
+  connection?: NodeConnection<T>;
+  value: T;
+
+  setValue(value) {
+    this.value = value;
+    this.update(this);
+  }
+}
+
+export class NodeOutput<O> extends NodeSocket<O> {
   constructor(
     public name: string = 'Output',
     public node: Node,
-    public process: ProcessOutput<O> = ([]) => 0 as unknown as O
-  ) { }
+    public process: (inputs: NodeInput<any>[]) => O = ([]) => 0 as unknown as O,
+    public baseType: string = 'string',
+    public additionalInfo: object = {}
+  ) {
+    super(name, node, baseType, additionalInfo);
+  }
 
   connections: NodeConnection<O>[] = [];
   connectTo(target: NodeInput<O>): NodeOutput<O> {
     const connection = new NodeConnection<O>(this, target);
     this.connections.push(connection);
     target.connection = connection;
+    console.log(this);
     return this;
   }
   trigger(value: O): void {
@@ -46,6 +70,7 @@ export class NodeConnection<T> {
 
 type NodeInputs = NodeInput<any>[];
 type NodeOutputs = NodeOutput<any>[];
+
 /**
  * Node base class
  *
@@ -53,23 +78,50 @@ type NodeOutputs = NodeOutput<any>[];
  */
 export class Node {
   constructor(
-    public name: string = 'Node'
+    public name: string = 'Node',
+    public inputs: NodeInputs = [],
+    public outputs: NodeOutputs = []
   ) { }
+
+  get title() {
+    return this.name;
+  }
+
+  get connections() {
+    const inputConnections = this.inputs.map(input => input.connection);
+    const outputConnections = this.outputs.reduce((connections, output) => {
+      return connections.concat(output.connections);
+    }, []);
+    return inputConnections.concat(outputConnections);
+  }
 
   /**
    * List of Node Inputs
    */
-  inputs: NodeInputs = [];
+  // inputs: NodeInputs = [];
+
   /**
    * List of Node Outputs
    */
-  outputs: NodeOutputs = [];
+  // outputs: NodeOutputs = [];
 
+  /**
+   * Process current input values and trigger outputs with fresh values.
+   */
   update() {
+    console.log(this);
     this.outputs.map(output => {
       const value = output.process(this.inputs);
       output.trigger(value);
     });
+  }
+
+  addInput(input) {
+    this.inputs.push(input);
+  }
+
+  addOutput(output) {
+    this.outputs.push(output);
   }
 }
 
@@ -79,9 +131,12 @@ export class Node {
 class NoteNode extends Node {
   constructor() {
     super();
-    this.inputs = [
-      new NodeInput<Tone.Frequency[]>('Input Notes', this, ['C4'])];
-    this.outputs = [new NodeOutput<Tone.Frequency[]>('Output Notes', this, this.processNotes.bind(this))];
+    this.addInput(
+      new NodeInput<Tone.Frequency[]>('Input Notes', this, [60], this.update.bind(this))
+    );
+    this.addOutput(
+      new NodeOutput<Tone.Frequency[]>('Output Notes', this, this.processNotes.bind(this))
+    );
   }
 
   /**
@@ -169,17 +224,20 @@ export class KeyboardOutputNode extends NoteNode {
  */
 export class SynthNode extends NoteNode {
   constructor(
-    public synth: Tone.Synth = new Tone.PolySynth().toMaster(),
-    public name: string = 'Synth Node'
+    public name: string = 'Synth Node',
+    public synth: Tone.Synth = new Tone.PolySynth().toMaster()
   ) {
     super();
-    this.outputs = [];
   }
 
   update() {
     const notes = this.inputs[0].value;
-    console.log(notes);
     this.synth.triggerAttackRelease(notes, '8n');
+
+    this.outputs.map(output => {
+      const value = output.process(this.inputs);
+      output.trigger(value);
+    });
   }
 }
 
@@ -188,13 +246,23 @@ export class SynthNode extends NoteNode {
  *
  * Outputs the trigger's input number as MIDI note.
  */
-export class KeyboardNode extends Node {
+export class KeyboardNode extends NoteNode {
   constructor(
     public name: string = 'Keyboard Node'
   ) {
     super();
-    this.inputs = [];
-    this.outputs = [new NodeOutput<Tone.Frequency[]>('Output Notes', this)];
+    this.addInput(
+      new NodeInput<Tone.Frequency[]>('Display Notes', this, [], this.showNotes.bind(this))
+    );
+  }
+
+  showNotes() {
+    this.inputs[1].value.map(note => {
+      document.querySelectorAll(`.key[data-note="${note.toMidi()}"]`).forEach(el => {
+        el.classList.add('active');
+        setTimeout(() => el.classList.remove('active'), 500);
+      });
+    });
   }
 
   onTrigger(value): void {

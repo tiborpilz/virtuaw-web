@@ -5,6 +5,7 @@ import { AppComponent } from './app.component';
 import { KeyboardComponent } from './keyboard/keyboard.component';
 import { KeyComponent } from './keyboard/key/key.component';
 import { GraphNodeComponent } from './graph-node/graph-node.component';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @NgModule({
   declarations: [
@@ -15,6 +16,7 @@ import { GraphNodeComponent } from './graph-node/graph-node.component';
   ],
   imports: [
     BrowserModule,
+    DragDropModule
   ],
   providers: [],
   bootstrap: [AppComponent]

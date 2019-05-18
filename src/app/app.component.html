@@ -1,12 +1,14 @@
 <!--The content below is only a placeholder and can be replaced.-->
-<div style="text-align:center">
-  <h1>
-    Welcome to {{ title }}!
-  </h1>
+<div>
   <app-keyboard [onTrigger]="triggerSynth"></app-keyboard>
-  <button (click)="connect()">Connect</button>
-  <button (click)="disconnect()">Disconnect</button>
-
-  <app-graph-node *ngFor="let graphNode of graphNodes" [graphNode]="graphNode" [makeConnectionFrom]="makeConnectionFrom" [makeConnectionTo]="makeConnectionTo"></app-graph-node>
-
+  <div class="graph-container">
+    <app-graph-node
+      *ngFor="let graphNode of graphNodes"
+      [graphNode]="graphNode"
+      [makeConnectionFrom]="makeConnectionFrom"
+      [makeConnectionTo]="makeConnectionTo"
+      [class]="isConnecting(graphNode)"
+      cdkDrag>
+    </app-graph-node>
+  </div>
 </div>

@@ -1,0 +1,62 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid black;
+  margin: 15px;
+  width: 200px;
+  height: 400px;
+
+  &.connecting {
+    opacity: 0.2;
+
+    &.slotted {
+      opacity: 1.0;
+    }
+  }
+
+  .title {
+    text-align: center;
+  }
+
+  .body {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+
+    .interface {
+      width: 80px;
+      background-color: #CCC;
+      align-content: end;
+
+      & .channel {
+        & .socket {
+          width: 30px;
+          height: 30px;
+          margin: 15px;
+        }
+
+        &.outputs {
+          & .socket {
+            margin-right: 0;
+          }
+        }
+        &.inputs {
+          & .socket {
+            margin-left: 0;
+          }
+        }
+      }
+    }
+  }
+}
+
+    // &.inputs {
+    //   float: left;
+    //   text-align: left;
+    // }
+    // &.outputs {
+    //   float: right;
+    //   text-align: right;
+    // }
+
+

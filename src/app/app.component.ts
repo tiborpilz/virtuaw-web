@@ -1,28 +1,37 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import Tone from 'tone';
+// import { LGraph, LGraphCanvas, LiteGraph } from 'litegraph.js';
+import { LiteGraph } from 'litegraph.js';
 
 import { NodeInput, NodeOutput, SynthNode, HarmonizeNode, AddIntervalsNode, KeyboardNode, KeyboardOutputNode } from './graphNodes';
 
-const simpleSynth = new SynthNode();
-const major = new HarmonizeNode();
-const minor = new HarmonizeNode([0, 3, 7]);
-const addHigher = new AddIntervalsNode([12]);
 const keyboard = new KeyboardNode();
-const keyboardOutput = new KeyboardOutputNode();
-
+const addHigher = new AddIntervalsNode([12]);
+const simpleSynth = new SynthNode('Simple Synth');
+const major = new HarmonizeNode([0, 4, 7], 'Harmonize Major');
+const minor = new HarmonizeNode([0, 3, 7], 'Harmonize Minor');
 
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.sass']
+  styleUrls: ['./app.component.scss']
 })
 
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'virtuaw-web';
-  graphNodes = [simpleSynth, major, minor, addHigher, keyboard, keyboardOutput];
+  graphNodes = [keyboard, simpleSynth, major, minor, addHigher];
+  graph: any;
+  canvas: any;
   inputSlot = null;
   outputSlot = null;
+  get selectedNode() {
+    return [this.inputSlot, this.outputSlot].filter(s => s).map(s => s.node);
+  }
+  isConnecting(graphNode) {
+    return (this.selectedNode && 'connecting') + (this.selectedNode === graphNode && ' selected');
+  }
+
   triggerSynth = (value) => keyboard.onTrigger(value);
 
   makeConnectionFrom = (output) => {
@@ -56,5 +65,12 @@ export class AppComponent {
   disconnect() {
     // simpleSynth.disconnect();
     // major.disconnect();
+  }
+
+  debug() {
+    console.log(this, this.graph, this.canvas);
+  }
+
+  ngOnInit() {
   }
 }

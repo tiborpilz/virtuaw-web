@@ -1,20 +1,23 @@
-<div>
-  <h2>{{graphNode.name}}</h2>
-  <h4>Inputs</h4>
-  <p *ngFor="let input of graphNode.inputs">
-    {{input.name}}:
-    <button (click)="makeConnectionTo(input)">Connect To</button>
-    <span *ngIf="input.connection">
-      {{input.connection.from.node.name}}
-    </span>
-  </p>
-  <h4>Outputs</h4>
-  <p *ngFor="let output of graphNode.outputs">
-    {{output.name}}:
-    <button (click)="makeConnectionFrom(output)">Connect From</button>
-    <span *ngFor="let connection of output.connections">
-      {{connection.to.node.name}}
-    </span>
-  </p>
+<h2 class="title">{{graphNode.name}}</h2>
+<div class="body">
+  <div class="interface inputs">
+    <h4>Inputs</h4>
+    <div class="channel" *ngFor="let input of graphNode.inputs">
+      {{input.name}}:
+      <button class="socket" (click)="makeConnectionTo(input)" title="Connect To..."></button>
+      <span *ngIf="input.connection">
+        {{input.connection.from.node.name}}
+      </span>
+    </div>
+  </div>
+  <div class="interface outputs">
+    <h4>Outputs</h4>
+    <div class="channel" *ngFor="let output of graphNode.outputs">
+      {{output.name}}:
+      <button class="socket" (click)="makeConnectionFrom(output)" title="Connect From..."></button>
+      <span *ngFor="let connection of output.connections">
+        {{connection.to.node.name}}
+      </span>
+    </div>
+  </div>
 </div>
-<hr>
