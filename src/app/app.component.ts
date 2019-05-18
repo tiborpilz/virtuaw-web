@@ -10,8 +10,6 @@ import {
   HarmonizeNode,
   AddIntervalsNode,
   KeyboardNode,
-  MasterAudioNode,
-  ReverbNode,
   ArpeggiatorNode
 } from './graphNodes';
 
@@ -21,8 +19,6 @@ const keyboard = new KeyboardNode();
 const simpleSynth = new SynthNode('Simple Synth');
 const major = new HarmonizeNode([0, 4, 7], 'Harmonize Major');
 const minor = new HarmonizeNode([0, 3, 7], 'Harmonize Minor');
-const masterAudio = new MasterAudioNode();
-const reverbNode = new ReverbNode();
 const arpeggiator = new ArpeggiatorNode();
 
 
@@ -34,7 +30,7 @@ const arpeggiator = new ArpeggiatorNode();
 
 export class AppComponent implements OnInit {
   title = 'virtuaw-web';
-  graphNodes = [keyboard, major, minor, simpleSynth, arpeggiator, masterAudio];
+  graphNodes = [keyboard, major, minor, simpleSynth, arpeggiator];
   graph: any;
   canvas: any;
   inputSlot = null;

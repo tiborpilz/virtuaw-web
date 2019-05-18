@@ -40,12 +40,13 @@ export class NodeOutput<O> implements NodeSocket<O> {
   constructor(
     public title: string = 'Output',
     public node: Node,
-    public process: (inputs: NodeInput<any>[]) => O = ([]) => 0 as unknown as O,
+    public process: (inputs: NodeInput<any>[]) => O = () => null,
     public baseType: string = 'string',
     public additionalInfo: object = {}
   ) {
     this.id = Math.random().toString(36).substr(2, 9);
   }
+
   socketType = 'output';
   id: string;
 
@@ -53,11 +54,15 @@ export class NodeOutput<O> implements NodeSocket<O> {
   connectTo(target: NodeInput<O>): NodeOutput<O> {
     const connection = new NodeConnection<O>(this, target);
     this.connections.push(connection);
+    target.connections.push(connection);
     target.connection = connection;
+
     this.node.onConnect(this);
     target.node.onConnect(this);
+
     return this;
   }
+
   trigger(value: O): void {
     this.connections.map(conn => conn.to.setValue(value));
   }
@@ -255,25 +260,6 @@ export class ArpeggiatorNode extends Node {
   }
 }
 
-
-
-
-export class KeyboardOutputNode extends NoteNode {
-  constructor(
-    public title: string = 'Keyboard Output Node'
-  ) {
-    super();
-  }
-
-  processNote(note) {
-    document.querySelectorAll(`.key[data-note="${note.toMidi()}"]`).forEach(el => {
-      el.classList.add('active');
-      setTimeout(() => el.classList.remove('active'), 500);
-    });
-    return note;
-  }
-}
-
 /**
  * Synth Node
  *
@@ -303,104 +289,6 @@ export class SynthNode extends NoteNode {
     }
   }
 }
-
-export class AudioNode extends Node {
-  constructor(
-    public title: string = 'Generic Audio Node',
-    public audioNode: Tone.AudioNode
-  ) {
-    super();
-    this.addInput(
-      new NodeInput<Tone.AudioNode>('Audio Input', this, new Tone.AudioNode(), this.update.bind(this))
-    );
-    this.addOutput(
-      new NodeOutput<Tone.AudioNode>('Audio Output', this, this.getAudioNode)
-    );
-  }
-
-  getAudioNode() {
-    return this.audioNode;
-  }
-
-  onConnect(socket) {
-    console.log(socket.node);
-    if (socket.socketType === 'input') {
-      socket.value.connect(this.audioNode);
-    }
-  }
-
-  onDisconnect(socket) {
-    if (socket.socketType === 'input') {
-      socket.value.disconnect();
-    }
-  }
-}
-
-export class MasterAudioNode extends AudioNode {
-  constructor(
-    public title: string = 'Master Audio Node',
-  ) {
-    super(title, Tone.Master);
-    this.outputs = [];
-  }
-
-  onConnect(socket) {
-    console.log(socket);
-    this.inputs[0].value.toMaster();
-    // socket.value.toMaster();
-  }
-
-  onDisconnect(socket) {
-    if (socket.type === 'input') {
-      socket.value.disconnect();
-    }
-  }
-}
-
-export class ReverbNode extends Node {
-  constructor(
-    public title: string = 'Reverb Node',
-    public decay: number = 5.0,
-    public preDelay: number = 0.2,
-    public audioNode: Tone.Reverb = new Tone.Reverb()
-  ) {
-    super();
-    this.addInput(
-      new NodeInput<Tone.AudioNode>('Audio Input', this)
-    );
-    this.addOutput(
-      new NodeOutput<Tone.AudioNode>('Audio Output', this, () => this.audioNode)
-    );
-  }
-  onConnect(socket) {
-    console.log(socket.node);
-    if (socket.socketType === 'input') {
-      socket.value.connect(this.audioNode);
-    }
-  }
-
-  onDisconnect(socket) {
-    if (socket.socketType === 'input') {
-      socket.value.disconnect();
-    }
-  }
-}
-
-/**
- * Outputs a constant value
- */
-export class ConstantNode extends Node {
-  constructor(
-    public title: string = 'Constant Node',
-    public value: number = 1.0
-  ) {
-    super();
-    this.addOutput(
-      new NodeOutput<number>('Number Output', this, () => this.value)
-    );
-  }
-}
-
 
 /**
  * Keyboard Node
