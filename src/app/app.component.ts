@@ -3,15 +3,27 @@ import Tone from 'tone';
 // import { LGraph, LGraphCanvas, LiteGraph } from 'litegraph.js';
 import { LiteGraph } from 'litegraph.js';
 
-import { NodeInput, NodeOutput, SynthNode, HarmonizeNode, AddIntervalsNode, KeyboardNode, KeyboardOutputNode } from './graphNodes';
+import {
+  NodeInput,
+  NodeOutput,
+  SynthNode,
+  HarmonizeNode,
+  AddIntervalsNode,
+  KeyboardNode,
+  MasterAudioNode,
+  ReverbNode,
+  ArpeggiatorNode
+} from './graphNodes';
 
 import { SocketConnectorService } from './socket-connector.service';
 
 const keyboard = new KeyboardNode();
-const addHigher = new AddIntervalsNode([12]);
 const simpleSynth = new SynthNode('Simple Synth');
 const major = new HarmonizeNode([0, 4, 7], 'Harmonize Major');
 const minor = new HarmonizeNode([0, 3, 7], 'Harmonize Minor');
+const masterAudio = new MasterAudioNode();
+const reverbNode = new ReverbNode();
+const arpeggiator = new ArpeggiatorNode();
 
 
 @Component({
@@ -22,7 +34,7 @@ const minor = new HarmonizeNode([0, 3, 7], 'Harmonize Minor');
 
 export class AppComponent implements OnInit {
   title = 'virtuaw-web';
-  graphNodes = [keyboard, simpleSynth, major, minor, addHigher];
+  graphNodes = [keyboard, major, minor, simpleSynth, arpeggiator, masterAudio];
   graph: any;
   canvas: any;
   inputSlot = null;
