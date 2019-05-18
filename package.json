@@ -24,7 +24,7 @@
     "@swimlane/ngx-graph": "^6.0.1",
     "core-js": "^2.5.4",
     "litegraph.js": "^0.7.0",
-    "rxjs": "~6.3.3",
+    "rxjs": "^6.3.3",
     "tone": "^13.4.9",
     "tslib": "^1.9.0",
     "zone.js": "~0.8.26"

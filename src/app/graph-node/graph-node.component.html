@@ -1,23 +1,23 @@
-<h2 class="title">{{graphNode.name}}</h2>
+<h2 class="title">{{graphNode.title}}</h2>
 <div class="body">
   <div class="interface inputs">
     <h4>Inputs</h4>
+    <app-socket *ngFor="let input of graphNode.inputs" [socket]="input"></app-socket>
     <div class="channel" *ngFor="let input of graphNode.inputs">
-      {{input.name}}:
+      {{input.title}}:
       <button class="socket" (click)="makeConnectionTo(input)" title="Connect To..."></button>
       <span *ngIf="input.connection">
-        {{input.connection.from.node.name}}
+        {{input.connection.from.node.title}}
       </span>
     </div>
   </div>
   <div class="interface outputs">
     <h4>Outputs</h4>
+    <app-socket *ngFor="let output of graphNode.outputs" [socket]="output"></app-socket>
     <div class="channel" *ngFor="let output of graphNode.outputs">
-      {{output.name}}:
+      {{output.title}}:
       <button class="socket" (click)="makeConnectionFrom(output)" title="Connect From..."></button>
-      <span *ngFor="let connection of output.connections">
-        {{connection.to.node.name}}
-      </span>
+      <app-graph-connection *ngFor="let connection of output.connections" [connection]="connection"></app-graph-connection>
     </div>
   </div>
 </div>

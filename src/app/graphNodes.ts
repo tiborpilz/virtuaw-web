@@ -2,27 +2,23 @@ import Tone from 'tone';
 
 export class NodeSocket<T> {
   constructor(
-    public name: string = 'Input',
+    public title: string = 'Input',
     public node: Node,
     public baseType: string = 'string',
     public additionalInfo?: object,
   ) { }
-
-  get title() {
-    return this.name;
-  }
 }
 
 export class NodeInput<T> extends NodeSocket<T> {
   constructor(
-    public name: string = 'Input',
+    public title: string = 'Input',
     public node: Node,
     public defaultValue: T,
     public update: (input: NodeInput<T>, ...rest) => void,
     public baseType: string = typeof(defaultValue),
     public additionalInfo: object = {}
   ) {
-    super(name, node, baseType, additionalInfo);
+    super(title, node, baseType, additionalInfo);
     this.value = defaultValue;
   }
   connection?: NodeConnection<T>;
@@ -36,13 +32,13 @@ export class NodeInput<T> extends NodeSocket<T> {
 
 export class NodeOutput<O> extends NodeSocket<O> {
   constructor(
-    public name: string = 'Output',
+    public title: string = 'Output',
     public node: Node,
     public process: (inputs: NodeInput<any>[]) => O = ([]) => 0 as unknown as O,
     public baseType: string = 'string',
     public additionalInfo: object = {}
   ) {
-    super(name, node, baseType, additionalInfo);
+    super(title, node, baseType, additionalInfo);
   }
 
   connections: NodeConnection<O>[] = [];
@@ -71,18 +67,14 @@ type NodeOutputs = NodeOutput<any>[];
 /**
  * Node base class
  *
- * @param name: The Node's display name.
+ * @param title: The Node's display title.
  */
 export class Node {
   constructor(
-    public name: string = 'Node',
+    public title: string = 'Node',
     public inputs: NodeInputs = [],
     public outputs: NodeOutputs = []
   ) { }
-
-  get title() {
-    return this.name;
-  }
 
   get connections() {
     const inputConnections = this.inputs.filter(input => input.connection).map(input => input.connection);
@@ -164,7 +156,7 @@ class NoteNode extends Node {
 export class HarmonizeNode extends NoteNode {
   constructor(
     public intervals: number[] = [0, 4, 7],
-    public name: string = 'Harmonize Node'
+    public title: string = 'Harmonize Node'
   ) {
     super();
   }
@@ -187,7 +179,7 @@ export class HarmonizeNode extends NoteNode {
 export class AddIntervalsNode extends NoteNode {
   constructor(
     public intervals: number[] = [12],
-    public name: string = 'Add Intervals Node'
+    public title: string = 'Add Intervals Node'
   ) {
     super();
   }
@@ -200,7 +192,7 @@ export class AddIntervalsNode extends NoteNode {
 
 export class KeyboardOutputNode extends NoteNode {
   constructor(
-    public name: string = 'Keyboard Output Node'
+    public title: string = 'Keyboard Output Node'
   ) {
     super();
   }
@@ -221,7 +213,7 @@ export class KeyboardOutputNode extends NoteNode {
  */
 export class SynthNode extends NoteNode {
   constructor(
-    public name: string = 'Synth Node',
+    public title: string = 'Synth Node',
     public synth: Tone.Synth = new Tone.PolySynth().toMaster()
   ) {
     super();
@@ -245,7 +237,7 @@ export class SynthNode extends NoteNode {
  */
 export class KeyboardNode extends NoteNode {
   constructor(
-    public name: string = 'Keyboard Node'
+    public title: string = 'Keyboard Node'
   ) {
     super();
     this.addInput(
