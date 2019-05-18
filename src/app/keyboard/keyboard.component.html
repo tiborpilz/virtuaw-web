@@ -1,0 +1,7 @@
+<div *ngFor="let note of notes"
+  class="key"
+  [ngClass]="keyType(note)"
+  [attr.data-note]="'' + note"
+  (mousedown)="onTrigger(note, $event)"
+>
+</div>

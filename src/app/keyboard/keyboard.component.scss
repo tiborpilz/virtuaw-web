@@ -1,0 +1,46 @@
+:host {
+  display: flex;
+  height: 100px;
+
+  position: relative;
+  .key {
+    &.black {
+      width: 20px;
+      margin-bottom: 20px;
+      margin-left: -10px;
+      margin-right: -10px;
+      z-index: 1;
+
+      --bg-color: #222222;
+      --bg-color-hover: #444444;
+    }
+    &.white {
+      width: 28px;
+      bottom: 0;
+      z-index: 0;
+
+      --bg-color: #CCCCCC;
+      --bg-color-hover: #DDDDDD;
+    }
+
+    &:hover {
+      background-color: var(--bg-color-hover);
+    }
+
+    &:active, &.active {
+      background-color: #AAFFAA;
+      box-shadow: 0px 0px 2px rgba(0,0,0,0.2);
+      filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.5));
+
+      &.white {
+        box-shadow: inset 0px 0px 4px -2px rgba(0,0,0,0.5);
+      }
+    }
+
+    border-radius: 2px;
+    background: var(--bg-color);
+    filter: drop-shadow(4px 4px 4px rgba(0,0,0,0.5));
+    box-shadow: inset 0px 0px 0px -2px rgba(0,0,0,0.0);
+    transition: all 0.25s ease;
+  }
+}
