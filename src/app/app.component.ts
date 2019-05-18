@@ -10,6 +10,8 @@ const addHigher = new AddIntervalsNode([12]);
 const keyboard = new KeyboardNode();
 const keyboardOutput = new KeyboardOutputNode();
 
+
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -18,12 +20,18 @@ const keyboardOutput = new KeyboardOutputNode();
 
 export class AppComponent {
   title = 'virtuaw-web';
-  triggerSynth = keyboard.trigger;
+  graphNodes = [simpleSynth, major, minor, addHigher, keyboard, keyboardOutput];
+
+  triggerSynth = (value) => keyboard.onTrigger(value);
+
+
   connect() {
-    keyboard.connect(minor).connect(addHigher).connect(keyboardOutput);
+    keyboard.outputs[0].connectTo(major.inputs[0]);
+    major.outputs[0].connectTo(keyboardOutput.inputs[0]);
+    major.outputs[0].connectTo(simpleSynth.inputs[0]);
   }
   disconnect() {
-    simpleSynth.disconnect();
-    major.disconnect();
+    // simpleSynth.disconnect();
+    // major.disconnect();
   }
 }

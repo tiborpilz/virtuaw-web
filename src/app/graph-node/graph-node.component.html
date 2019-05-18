@@ -1,0 +1,7 @@
+<p>
+  {{graphNode.name}}
+  <span *ngFor="let output of graphNode.outputs">
+    {{output.name}}:
+    [<span *ngFor="let connection of output.connections">{{connection.to.name}}</span>,]
+  </span>
+</p>
