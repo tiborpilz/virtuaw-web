@@ -1,4 +1,7 @@
 import { Injectable } from '@angular/core';
+import { NodeOutput, NodeInput } from './graphNodes';
+
+type maybeSocket = boolean | NodeOutput<any> | NodeInput<any>;
 
 @Injectable({
   providedIn: 'root'
@@ -10,23 +13,31 @@ export class SocketConnectorService {
 
   elementConnections = [];
 
-  targets = {
-    NodeInput: false,
-    NodeOutput: false,
-  };
+  inputTarget?: NodeInput<any>;
+  outputTarget?: NodeOutput<any>;
+
+  startSocketType?: string;
 
   startConnection(startSocket, startElement) {
-    this.targets[startSocket.constructor.name] = startSocket;
+    if (startSocket.socketType === 'output') {
+      this.outputTarget = startSocket;
+    } else {
+      this.inputTarget = startSocket;
+    }
+    this.startSocketType = startSocket.socketType;
     this.startElement = startElement;
     this.isConnecting = true;
   }
 
   attemptConnection(endSocket) {
-    if (this.isConnecting) {
-      if (!this.targets[endSocket.constructor.name]) {
-        this.targets[endSocket.constructor.name] = endSocket;
-        this.targets.NodeOutput.connectTo(this.targets.NodeInput);
+    if (this.isConnecting && endSocket.socketType !== this.startSocketType) {
+      if (endSocket.socketType === 'output') {
+        this.outputTarget = endSocket;
+      } else {
+        this.inputTarget = endSocket;
       }
+
+      this.outputTarget.connectTo(this.inputTarget);
     }
 
     this.cleanup();
@@ -34,10 +45,13 @@ export class SocketConnectorService {
 
   cleanup() {
     this.isConnecting = false;
-    this.targets = {
-      NodeInput: false,
-      NodeOutput: false
-    };
+    delete this.startSocketType;
+    delete this.inputTarget;
+    delete this.outputTarget;
+    // this.targets = {
+    //   NodeInput: false,
+    //   NodeOutput: false
+    // };
   }
 
   constructor() { }
