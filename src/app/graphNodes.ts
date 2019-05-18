@@ -1,34 +1,26 @@
 import Tone from 'tone';
 
-export class NodeSocket<T> {
+export interface NodeSocket<T> {
+  socketType: string;
   id: string;
-  constructor(
-    public title: string = 'Input',
-    public node: Node,
-    public baseType: string = 'string',
-    public additionalInfo?: object,
-  ) {
-    this.id = Math.random().toString(36).substr(2, 9);
-  }
-
-  onConnect(socket: this) {
-    return;
-  }
+  connections: NodeConnection<T>[];
 }
 
-export class NodeInput<T> extends NodeSocket<T> {
-  public socketType = 'input';
+
+export class NodeInput<T> implements NodeSocket<T> {
   constructor(
     public title: string = 'Input',
     public node: Node,
     public defaultValue: T = null,
-    public update: (input: NodeInput<T>, ...rest) => void = () => null,
-    public baseType: string = typeof(defaultValue),
-    public additionalInfo: object = {}
+    public update,
   ) {
-    super(title, node, baseType, additionalInfo);
     this.value = defaultValue;
+    this.id = Math.random().toString(36).substr(2, 9);
   }
+
+  socketType = 'input';
+  id;
+  connections;
   connection?: NodeConnection<T>;
   value: T;
 
@@ -44,8 +36,7 @@ export class NodeInput<T> extends NodeSocket<T> {
   }
 }
 
-export class NodeOutput<O> extends NodeSocket<O> {
-  socketType = 'output';
+export class NodeOutput<O> implements NodeSocket<O> {
   constructor(
     public title: string = 'Output',
     public node: Node,
@@ -53,15 +44,16 @@ export class NodeOutput<O> extends NodeSocket<O> {
     public baseType: string = 'string',
     public additionalInfo: object = {}
   ) {
-    super(title, node, baseType, additionalInfo);
+    this.id = Math.random().toString(36).substr(2, 9);
   }
+  socketType = 'output';
+  id: string;
 
   connections: NodeConnection<O>[] = [];
   connectTo(target: NodeInput<O>): NodeOutput<O> {
     const connection = new NodeConnection<O>(this, target);
     this.connections.push(connection);
     target.connection = connection;
-    this.node.update();
     this.node.onConnect(this);
     target.node.onConnect(this);
     return this;
@@ -111,7 +103,6 @@ export class Node {
   }
 
   update() {
-    console.log(this);
     this.outputs.map(output => {
       const value = output.process(this.inputs);
       output.trigger(value);
@@ -211,34 +202,52 @@ export class AddIntervalsNode extends NoteNode {
   }
 }
 
-export class ArpeggiatorNode extends NoteNode {
+export class ArpeggiatorNode extends Node {
   constructor(
-    public noteDuration: number = 250,
+    public noteDuration: number = 100,
     public title: string = 'Arpeggiator Node',
   ) {
     super();
-    // this.generator = this.stepNotes([]);
-    // this.advanceNote();
+    this.addInput(
+      new NodeInput<Tone.Frequency[]>('Input Notes', this, [], this.update.bind(this))
+    );
+    this.addOutput(
+      new NodeOutput<Tone.Frequency[]>('Output Notes', this, this.processNotes.bind(this))
+    );
+    this.advanceNote();
+    this.noteGen = this.noteGenerator();
   }
 
-  notes: number[];
-  nextNote: number;
-  generator: any;
+  notes: Tone.MidiNote[] = [];
+  nextNote: Tone.MidiNote;
+  noteGen: IterableIterator<Tone.Frequency>;
 
-  stepNotes = function*(notes) {
+  *noteGenerator(): IterableIterator<Tone.Frequency> {
+    console.log('Iterator');
     while (true) {
-      yield* notes;
+      yield* [].concat(this.notes);
     }
-  };
+  }
+
+  update() {
+    if (this.inputs[0].value) {
+      this.notes = this.inputs[0].value;
+    }
+    this.outputs[0].trigger([this.nextNote]);
+  }
 
   advanceNote() {
-    this.nextNote = this.generator.next().value;
-    // setTimeout(() => this.advanceNote, this.noteDuration);
+    if (this.notes.length > 0) {
+      this.nextNote = this.noteGen.next().value;
+    }
+    this.processNotes();
+    this.update();
+    // this.nextNote = Math.round(Math.random() * 20);
+    setTimeout(() => this.advanceNote(), this.noteDuration);
   }
 
   processNotes() {
-    const inputNotes = this.inputs[0].value;
-    return [0];
+    return [this.nextNote];
 
     // this.notes = inputNotes;
 
@@ -273,12 +282,9 @@ export class KeyboardOutputNode extends NoteNode {
 export class SynthNode extends NoteNode {
   constructor(
     public title: string = 'Synth Node',
-    public synth: Tone.Synth = new Tone.PolySynth(),
+    public synth: Tone.Synth = new Tone.PolySynth().toMaster(),
   ) {
     super();
-    this.addOutput(
-      new NodeOutput<Tone.AudioNode>('Audio Output', this, () => this.synth)
-    );
   }
 
   update() {
@@ -339,6 +345,7 @@ export class MasterAudioNode extends AudioNode {
   }
 
   onConnect(socket) {
+    console.log(socket);
     this.inputs[0].value.toMaster();
     // socket.value.toMaster();
   }
