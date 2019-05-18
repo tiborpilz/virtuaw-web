@@ -258,13 +258,14 @@ export class KeyboardNode extends NoteNode {
     public title: string = 'Keyboard Node'
   ) {
     super();
+    this.inputs = [];
     this.addInput(
       new NodeInput<Tone.Frequency[]>('Display Notes', this, [], this.showNotes.bind(this))
     );
   }
 
   showNotes() {
-    this.inputs[1].value.map(note => {
+    this.inputs[0].value.map(note => {
       document.querySelectorAll(`.key[data-note="${note.toMidi()}"]`).forEach(el => {
         el.classList.add('active');
         setTimeout(() => el.classList.remove('active'), 500);

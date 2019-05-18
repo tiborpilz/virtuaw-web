@@ -8,6 +8,7 @@ import { GraphNodeComponent } from './graph-node/graph-node.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { SocketComponent } from './graph-node/socket/socket.component';
 import { GraphConnectionsComponent } from './graph-connections/graph-connections.component';
+import { CableComponent } from './graph-connections/cable/cable.component';
 
 @NgModule({
   declarations: [
@@ -17,6 +18,7 @@ import { GraphConnectionsComponent } from './graph-connections/graph-connections
     GraphNodeComponent,
     SocketComponent,
     GraphConnectionsComponent,
+    CableComponent,
   ],
   imports: [
     BrowserModule,

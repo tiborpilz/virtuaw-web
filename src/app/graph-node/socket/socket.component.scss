@@ -1,14 +1,37 @@
 :host {
-  width: 20px;
+  position: relative;
+  display: inline-block;
   height: 20px;
-  border-radius: 10px;
-  display: block;
-  background-color: #F0F;
-  margin: 5px;
+
+  .label {
+    display: inline-block;
+    height: 20px;
+    font-size: 16px;
+  }
 
   .socket {
-    width: 100%;
-    height: 100%;
+    position: absolute;
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 10px;
     background-color: rgba(128,128,256,0.5);
+  }
+
+  &.input {
+    .socket {
+      left: 0;
+    }
+    .label {
+      margin-left: 28px;
+    }
+  }
+  &.output {
+    .socket {
+      right: 0;
+    }
+    .label {
+      margin-right: 28px;
+    }
   }
 }

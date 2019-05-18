@@ -2,10 +2,10 @@
 <div class="body">
   <div class="interface inputs">
     <h4>Inputs</h4>
-    <app-socket *ngFor="let input of graphNode.inputs" [socket]="input"></app-socket>
+    <app-socket class="input" *ngFor="let input of graphNode.inputs" [socket]="input"></app-socket>
   </div>
   <div class="interface outputs">
     <h4>Outputs</h4>
-    <app-socket *ngFor="let output of graphNode.outputs" [socket]="output"></app-socket>
+    <app-socket class="output" *ngFor="let output of graphNode.outputs" [socket]="output"></app-socket>
   </div>
 </div>
