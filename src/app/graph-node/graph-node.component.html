@@ -17,7 +17,6 @@
     <div class="channel" *ngFor="let output of graphNode.outputs">
       {{output.title}}:
       <button class="socket" (click)="makeConnectionFrom(output)" title="Connect From..."></button>
-      <app-graph-connection *ngFor="let connection of output.connections" [connection]="connection"></app-graph-connection>
     </div>
   </div>
 </div>

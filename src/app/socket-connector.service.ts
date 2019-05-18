@@ -5,15 +5,19 @@ import { Injectable } from '@angular/core';
 })
 export class SocketConnectorService {
   isConnecting = false;
+  startElement: HTMLElement;
+  connections = [];
+
+  elementConnections = [];
 
   targets = {
     NodeInput: false,
     NodeOutput: false,
   };
 
-  startConnection(startSocket) {
+  startConnection(startSocket, startElement) {
     this.targets[startSocket.constructor.name] = startSocket;
-    console.log(this.targets);
+    this.startElement = startElement;
     this.isConnecting = true;
   }
 

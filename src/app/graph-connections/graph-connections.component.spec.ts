@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { GraphConnectionComponent } from './graph-connection.component';
+import { GraphConnectionsComponent } from './graph-connections.component';
 
-describe('GraphConnectionComponent', () => {
-  let component: GraphConnectionComponent;
-  let fixture: ComponentFixture<GraphConnectionComponent>;
+describe('GraphConnectionsComponent', () => {
+  let component: GraphConnectionsComponent;
+  let fixture: ComponentFixture<GraphConnectionsComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ GraphConnectionComponent ]
+      declarations: [ GraphConnectionsComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(GraphConnectionComponent);
+    fixture = TestBed.createComponent(GraphConnectionsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

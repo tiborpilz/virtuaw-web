@@ -5,6 +5,8 @@ import { LiteGraph } from 'litegraph.js';
 
 import { NodeInput, NodeOutput, SynthNode, HarmonizeNode, AddIntervalsNode, KeyboardNode, KeyboardOutputNode } from './graphNodes';
 
+import { SocketConnectorService } from './socket-connector.service';
+
 const keyboard = new KeyboardNode();
 const addHigher = new AddIntervalsNode([12]);
 const simpleSynth = new SynthNode('Simple Synth');
@@ -28,7 +30,6 @@ export class AppComponent implements OnInit {
 
   get connections() {
     return this.graphNodes.reduce((connections, node) => {
-      console.log(node.connections);
       return [].concat(connections.concat(...node.connections));
     },
     []);

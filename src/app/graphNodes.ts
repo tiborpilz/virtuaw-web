@@ -1,15 +1,19 @@
 import Tone from 'tone';
 
 export class NodeSocket<T> {
+  id: string;
   constructor(
     public title: string = 'Input',
     public node: Node,
     public baseType: string = 'string',
     public additionalInfo?: object,
-  ) { }
+  ) {
+    this.id = Math.random().toString(36).substr(2, 9);
+  }
 }
 
 export class NodeInput<T> extends NodeSocket<T> {
+  public socketType = 'input';
   constructor(
     public title: string = 'Input',
     public node: Node,
@@ -31,6 +35,7 @@ export class NodeInput<T> extends NodeSocket<T> {
 }
 
 export class NodeOutput<O> extends NodeSocket<O> {
+  socketType = 'output';
   constructor(
     public title: string = 'Output',
     public node: Node,

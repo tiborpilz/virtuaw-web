@@ -1,0 +1,8 @@
+<svg width="100%" height="100%" [attr.viewBox]="viewBox">
+  <line x1=0 y1=0 x2=500 y2=500 stroke="black" />
+  <line *ngIf="service.isConnecting" [attr.x1]="startPos.x" [attr.y1]="startPos.y" [attr.x2]="mousePos.x" [attr.y2]="mousePos.y" stroke="black" />
+
+  <line
+    *ngFor="let connection of connections" [attr.x1]="getOutput(connection).x" [attr.y1]="getOutput(connection).y"
+    [attr.x2]="getInput(connection).x" [attr.y2]="getInput(connection).y" stroke="black" />
+</svg>
