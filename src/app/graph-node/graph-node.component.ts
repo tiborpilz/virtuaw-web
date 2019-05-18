@@ -8,7 +8,10 @@ import { Node } from '../graphNodes';
 })
 export class GraphNodeComponent implements OnInit {
 
-  @Input() graphNode: Node<any, any>;
+  @Input() graphNode: Node;
+
+  @Input() makeConnectionTo;
+  @Input() makeConnectionFrom;
 
   constructor() { }
 

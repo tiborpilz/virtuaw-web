@@ -3,8 +3,8 @@ import Tone from 'tone';
 export class NodeInput<I> {
   constructor(
     public name: string = 'Input',
-    public defaultValue: I,
-    public update: () => void
+    public node: Node,
+    public defaultValue: I
   ) {
     this.value = defaultValue;
   }
@@ -13,7 +13,7 @@ export class NodeInput<I> {
 
   setValue(value) {
     this.value = value;
-    this.update();
+    this.node.update();
   }
 }
 
@@ -21,7 +21,8 @@ export type ProcessOutput<O> = (inputs: NodeInput<any>[]) => O;
 export class NodeOutput<O> {
   constructor(
     public name: string = 'Output',
-    public process: ProcessOutput<O> = ([]) => 0 as unknown as O,
+    public node: Node,
+    public process: ProcessOutput<O> = ([]) => 0 as unknown as O
   ) { }
 
   connections: NodeConnection<O>[] = [];
@@ -64,10 +65,6 @@ export class Node {
    */
   outputs: NodeOutputs = [];
 
-  /**
-   * Go through each output's processing function and trigger an update with
-   * the new value to all connections.
-   */
   update() {
     this.outputs.map(output => {
       const value = output.process(this.inputs);
@@ -83,8 +80,8 @@ class NoteNode extends Node {
   constructor() {
     super();
     this.inputs = [
-      new NodeInput<Tone.Frequency[]>('Input Notes', ['C4'], this.update.bind(this))];
-    this.outputs = [new NodeOutput<Tone.Frequency[]>('Output Notes', this.processNotes.bind(this))];
+      new NodeInput<Tone.Frequency[]>('Input Notes', this, ['C4'])];
+    this.outputs = [new NodeOutput<Tone.Frequency[]>('Output Notes', this, this.processNotes.bind(this))];
   }
 
   /**
@@ -197,7 +194,7 @@ export class KeyboardNode extends Node {
   ) {
     super();
     this.inputs = [];
-    this.outputs = [new NodeOutput<Tone.Frequency[]>('Output Notes')];
+    this.outputs = [new NodeOutput<Tone.Frequency[]>('Output Notes', this)];
   }
 
   onTrigger(value): void {

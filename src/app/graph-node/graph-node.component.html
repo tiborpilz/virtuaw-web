@@ -1,7 +1,20 @@
-<p>
-  {{graphNode.name}}
-  <span *ngFor="let output of graphNode.outputs">
+<div>
+  <h2>{{graphNode.name}}</h2>
+  <h4>Inputs</h4>
+  <p *ngFor="let input of graphNode.inputs">
+    {{input.name}}:
+    <button (click)="makeConnectionTo(input)">Connect To</button>
+    <span *ngIf="input.connection">
+      {{input.connection.from.node.name}}
+    </span>
+  </p>
+  <h4>Outputs</h4>
+  <p *ngFor="let output of graphNode.outputs">
     {{output.name}}:
-    [<span *ngFor="let connection of output.connections">{{connection.to.name}}</span>,]
-  </span>
-</p>
+    <button (click)="makeConnectionFrom(output)">Connect From</button>
+    <span *ngFor="let connection of output.connections">
+      {{connection.to.node.name}}
+    </span>
+  </p>
+</div>
+<hr>
