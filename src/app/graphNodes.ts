@@ -32,6 +32,11 @@ export class NodeInput<T> extends NodeSocket<T> {
     this.value = value;
     this.update(this);
   }
+
+  disconnect() {
+    this.connection.from.disconnectInput(this);
+    delete this.connection;
+  }
 }
 
 export class NodeOutput<O> extends NodeSocket<O> {
@@ -56,6 +61,14 @@ export class NodeOutput<O> extends NodeSocket<O> {
   }
   trigger(value: O): void {
     this.connections.map(conn => conn.to.setValue(value));
+  }
+
+  disconnect() {
+    this.connections.map(conn => conn.to.disconnect());
+  }
+
+  disconnectInput(input) {
+    this.connections = this.connections.filter(conn => conn.to !== input);
   }
 }
 

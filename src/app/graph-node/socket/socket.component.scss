@@ -4,4 +4,11 @@
   border-radius: 10px;
   display: block;
   background-color: #F0F;
+  margin: 5px;
+
+  .socket {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(128,128,256,0.5);
+  }
 }

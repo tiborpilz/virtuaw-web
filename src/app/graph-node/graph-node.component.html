@@ -3,20 +3,9 @@
   <div class="interface inputs">
     <h4>Inputs</h4>
     <app-socket *ngFor="let input of graphNode.inputs" [socket]="input"></app-socket>
-    <div class="channel" *ngFor="let input of graphNode.inputs">
-      {{input.title}}:
-      <button class="socket" (click)="makeConnectionTo(input)" title="Connect To..."></button>
-      <span *ngIf="input.connection">
-        {{input.connection.from.node.title}}
-      </span>
-    </div>
   </div>
   <div class="interface outputs">
     <h4>Outputs</h4>
     <app-socket *ngFor="let output of graphNode.outputs" [socket]="output"></app-socket>
-    <div class="channel" *ngFor="let output of graphNode.outputs">
-      {{output.title}}:
-      <button class="socket" (click)="makeConnectionFrom(output)" title="Connect From..."></button>
-    </div>
   </div>
 </div>
