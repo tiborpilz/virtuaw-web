@@ -216,21 +216,27 @@ export class AddIntervalsNode extends MidiNode {
 
 export class ArpeggiatorNode extends MidiNode {
   constructor(
-    public title: string = 'Arpeggiator Node',
-    public duration: number = 1000
+    public duration: number = 1000,
+    public repeats: number = 1,
+    public direction: string = 'up',
+    public shuffle: boolean = false,
+    public title: string = 'Arpeggiator Node'
   ) {
     super();
   }
 
   processAllNotes(notes) {
+    this.arpeggiate(notes);
+  }
+
+  arpeggiate(notes) {
     if (!notes || notes.length === 0) {
       return [];
     }
-    console.log('processing');
 
     const note = notes.pop();
     this.outputs[0].trigger([note]);
-    setTimeout(() => this.processAllNotes(notes), this.duration);
+    setTimeout(() => this.arpeggiate(notes), this.duration);
     return [];
   }
 }
