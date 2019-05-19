@@ -48,11 +48,23 @@ export class AppComponent implements OnInit {
     []);
   }
 
+  availableNodes = {
+    Keyboard: midiNode.KeyboardNode,
+    'Simple Synth': midiNode.SynthNode,
+    Harmonize: midiNode.HarmonizeNode,
+    Arpeggiator: midiNode.ArpeggiatorNode,
+    Envelope: midiNode.EnvelopeNode
+  };
+
+  get nodeNames() {
+    return Object.keys(this.availableNodes);
+  }
+
   triggerSynth = (value, active) => keyboard.onTrigger(value, active);
 
-
-  debug() {
-    console.log(this, this.connections);
+  addNode(name) {
+    const node = new this.availableNodes[name]();
+    this.graphNodes.push(node);
   }
 
   ngOnInit() {

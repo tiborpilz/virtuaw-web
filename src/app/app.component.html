@@ -3,6 +3,12 @@
   </header>
   <nav class="subnav">
     <button (click)="debug()">Debug</button>
+    <button (click)="addNode(SynthNode)">Add Synth</button>
+    <div class="btn-group btn-primary">
+      <button *ngFor="let name of nodeNames" (click)="addNode(name)">
+        {{name}}
+      </button>
+    </div>
   </nav>
   <div class="content-container">
     <div class="content-area">
