@@ -28,6 +28,10 @@ export class SocketComponent implements OnInit {
     this.service.startConnection(this.socket, event.target);
   }
 
+  onKey(event) {
+    this.socket.setValue(event.target.value, true);
+  }
+
   @HostListener('mouseup', ['$event'])
   onMouseup(event) {
     this.service.attemptConnection(this.socket);

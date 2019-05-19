@@ -219,6 +219,7 @@ export class EnvelopeNode extends BaseNode {
     this.envelope = {
       attack: values[0], decay: values[1], sustain: values[2], release: values[3]
     };
+    this.outputs[0].trigger(this.envelope);
     return this.envelope;
   }
 
