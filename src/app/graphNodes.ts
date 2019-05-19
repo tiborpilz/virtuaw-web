@@ -23,9 +23,11 @@ export class NodeInput<T> implements NodeSocket<T> {
   connections;
   connection?: NodeConnection<T>;
   value: T;
+  active: boolean;
 
-  setValue(value) {
+  setValue(value, active) {
     this.value = value;
+    this.active = active;
     this.update(this);
   }
 
@@ -41,8 +43,6 @@ export class NodeOutput<O> implements NodeSocket<O> {
     public title: string = 'Output',
     public node: Node,
     public process: (inputs: NodeInput<any>[]) => O = () => null,
-    public baseType: string = 'string',
-    public additionalInfo: object = {}
   ) {
     this.id = Math.random().toString(36).substr(2, 9);
   }
@@ -63,8 +63,8 @@ export class NodeOutput<O> implements NodeSocket<O> {
     return this;
   }
 
-  trigger(value: O): void {
-    this.connections.map(conn => conn.to.setValue(value));
+  trigger(value: O, active): void {
+    this.connections.map(conn => conn.to.setValue(value, active));
   }
 
   disconnect() {
@@ -112,6 +112,11 @@ export class Node {
       const value = output.process(this.inputs);
       output.trigger(value);
     });
+    this.onUpdate();
+  }
+
+  onUpdate() {
+    return;
   }
 
   addInput(input) {
@@ -279,7 +284,7 @@ export class SynthNode extends NoteNode {
 
     this.outputs.map(output => {
       const value = output.process(this.inputs);
-      output.trigger(value);
+      output.trigger(value, true);
     });
   }
 
@@ -315,7 +320,7 @@ export class KeyboardNode extends NoteNode {
     });
   }
 
-  onTrigger(value): void {
-    this.outputs[0].trigger([new Tone.Frequency(value, 'midi')]);
+  onTrigger(value, active): void {
+    this.outputs[0].trigger([new Tone.Frequency(value, 'midi')], active);
   }
 }

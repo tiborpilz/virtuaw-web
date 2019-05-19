@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, HostListener } from '@angular/core';
 
 @Component({
   selector: 'app-keyboard',
@@ -26,6 +26,42 @@ export class KeyboardComponent implements OnInit {
     const range = endNote - startNote;
     return Array.from(Array(range)).map((_, note) => note + startNote);
   }
+  /**
+   * Currently active notes
+   */
+  activeNotes = new Set();
+
+  onMousedown(note, event) {
+    this.trigger(note, true, event);
+    event.preventDefault();
+  }
+
+  onMouseleave(note, event) {
+    this.trigger(note, false, event);
+  }
+
+  onMouseenter(note, event) {
+    if (event.buttons === 1) {
+      this.trigger(note, true, event);
+    }
+  }
+
+  @HostListener('document:mouseup', ['$event'])
+  onMouseup(event) {
+    this.activeNotes.forEach(value => this.trigger(value, false, event));
+  }
+  /**
+   * Event callback
+   */
+  trigger(value, active, event) {
+    if (active) {
+      this.onTrigger(value, active);
+      this.activeNotes.add(value);
+    } else {
+      this.activeNotes.delete(value);
+    }
+  }
+
 
   /**
    * Returns key type based on MIDI base note.
@@ -35,12 +71,9 @@ export class KeyboardComponent implements OnInit {
     return blackNotes.includes(note % 12) ? 'black' : 'white';
   }
 
-  // onTrigger = (note, trigger) => console.log(note);
-
   constructor() { }
 
   ngOnInit() {
-    console.log(this.notes);
   }
 
 }

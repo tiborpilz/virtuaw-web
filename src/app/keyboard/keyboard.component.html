@@ -2,6 +2,8 @@
   class="key"
   [ngClass]="keyType(note)"
   [attr.data-note]="'' + note"
-  (mousedown)="onTrigger(note, $event)"
+  (mousedown)="onMousedown(note, $event)"
+  (mouseleave)="onMouseleave(note, $event)"
+  (mouseenter)="onMouseenter(note, $event)"
 >
 </div>
