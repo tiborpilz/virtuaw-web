@@ -73,7 +73,7 @@ export class AddIntervalsNode extends MidiNode {
 
 export class ArpeggiatorNode extends MidiNode {
   constructor(
-    public duration: number = 1000,
+    public duration: number = 100,
     public repeats: number = 1,
     public direction: string = 'up',
     public shuffle: boolean = false,
@@ -81,10 +81,10 @@ export class ArpeggiatorNode extends MidiNode {
   ) {
     super();
     this.addInput(
-      new NodeInput<number>('Duration', this, this.updateOutputs.bind(this))
+      new NodeInput<number>('Duration', this, this.updateOutputs.bind(this), duration)
     );
     this.addInput(
-      new NodeInput<number>('Repeats', this, this.updateOutputs.bind(this))
+      new NodeInput<number>('Repeats', this, this.updateOutputs.bind(this), repeats)
     );
   }
 
@@ -97,10 +97,14 @@ export class ArpeggiatorNode extends MidiNode {
 
     const repeats = values[2];
     this.repeats = repeats;
+    // return notes;
   }
 
   processAllNotes(notes) {
     this.arpeggiate(notes);
+    if (this.direction === 'up') {
+      notes.reverse();
+    }
   }
 
   arpeggiate(notes) {
@@ -109,7 +113,7 @@ export class ArpeggiatorNode extends MidiNode {
     }
 
     const note = notes.pop();
-    this.outputs[0].trigger([note]);
+    this.outputs[0].trigger([note], true);
     setTimeout(() => this.arpeggiate(notes), this.duration);
     return [];
   }
