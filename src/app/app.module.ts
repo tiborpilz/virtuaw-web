@@ -1,6 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { ClarityModule } from '@clr/angular';
+import { FormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
 import { KeyboardComponent } from './keyboard/keyboard.component';
@@ -24,7 +25,8 @@ import { CableComponent } from './graph-connections/cable/cable.component';
   imports: [
     BrowserModule,
     DragDropModule,
-    ClarityModule
+    ClarityModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

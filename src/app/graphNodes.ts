@@ -12,8 +12,11 @@ export class NodeInput<T> implements NodeSocket<T> {
     public title: string = 'Input',
     public node: Node,
     public update,
+    public defaultValue: T = null,
+    public allowInput: boolean = false,
   ) {
     this.id = Math.random().toString(36).substr(2, 9);
+    this.value = defaultValue;
   }
 
   socketType = 'input';
@@ -25,7 +28,10 @@ export class NodeInput<T> implements NodeSocket<T> {
   setValue(value, active) {
     this.value = value;
     this.active = active;
-    this.update(this);
+
+    if (this.value && active) {
+      this.update(this);
+    }
   }
 
   disconnect() {
@@ -99,17 +105,7 @@ export interface Node {
  *
  * @param title: The Node's display title.
  */
-export class MidiNode implements Node {
-  constructor(
-    public title: string = 'Node',
-  ) {
-    this.addInput(
-      new NodeInput<Tone.Frequency[]>('Input Notes', this, this.updateOutputs.bind(this))
-    );
-    this.addOutput(
-      new NodeOutput<Tone.Frequency[]>('Output Notes', this, this.processInputs.bind(this))
-    );
-  }
+export class BaseNode implements Node {
 
   inputs = [];
   outputs = [];
@@ -120,17 +116,9 @@ export class MidiNode implements Node {
   }
 
   handleInputValues(values) {
-    const notes = values[0];
-    return this.processAllNotes(notes);
+    return values;
   }
 
-  processAllNotes(notes) {
-    return notes.map((note) => this.processSingleNote(note)).flat(Infinity);
-  }
-
-  processSingleNote(note) {
-    return note;
-  }
 
   get connections() {
     const inputConnections = this.inputs.filter(input => input.connection).map(input => input.connection);
@@ -142,7 +130,6 @@ export class MidiNode implements Node {
 
   updateOutputs(input) {
     this.outputs.map(output => {
-      console.log(this.inputs);
       const value = output.processInputs(this.inputs);
       output.trigger(value, true);
     });
@@ -170,122 +157,16 @@ export class MidiNode implements Node {
   }
 }
 
-
-/**
- * Harmonize Node.
- * Takes array of interval half-steps and outputs the transposed input note(s)
- *
- * @param intervals: The harmonization intervals in half-steps
- */
-export class HarmonizeNode extends MidiNode {
+class ConstNode<T> extends BaseNode {
   constructor(
-    public intervals: number[] = [0, 4, 7],
-    public title: string = 'Harmonize Node'
+    public title = 'Constant',
+    public outputCount = 1
   ) {
     super();
-  }
-
-  /**
-   * Uses Tone.js for harmonization.
-   */
-  processSingleNote(note) {
-    const harmony = Tone.Midi(note).harmonize(this.intervals);
-    return harmony;
-  }
-}
-
-/**
- * Add Intervals Node.
- * Takes array of intervals and outputs the input note(s) as well as all transpositions
- *
- * @param intervals: The intervals to transpose the note(s) in half-steps
- */
-export class AddIntervalsNode extends MidiNode {
-  constructor(
-    public intervals: number[] = [12],
-    public title: string = 'Add Intervals Node'
-  ) {
-    super();
-  }
-
-  processSingleNote(note) {
-    const transposed = this.intervals.map(i => note.transpose(i));
-    return [note].concat(...transposed);
-  }
-}
-
-export class ArpeggiatorNode extends MidiNode {
-  constructor(
-    public duration: number = 1000,
-    public repeats: number = 1,
-    public direction: string = 'up',
-    public shuffle: boolean = false,
-    public title: string = 'Arpeggiator Node'
-  ) {
-    super();
-  }
-
-  processAllNotes(notes) {
-    this.arpeggiate(notes);
-  }
-
-  arpeggiate(notes) {
-    if (!notes || notes.length === 0) {
-      return [];
+    for (let i = 0; i < this.outputCount; i++) {
+      this.addOutput(
+        new NodeOutput<T>('Output', this, this.updateOutputs.bind(this))
+      );
     }
-
-    const note = notes.pop();
-    this.outputs[0].trigger([note]);
-    setTimeout(() => this.arpeggiate(notes), this.duration);
-    return [];
-  }
-}
-
-/**
- * Synth Node
- *
- * Outputs the input note(s) and triggers a synth attack as side-effect.
- */
-export class SynthNode extends MidiNode {
-  constructor(
-    public title: string = 'Synth Node',
-    public synth: Tone.Synth = new Tone.PolySynth().toMaster(),
-  ) {
-    super();
-  }
-
-  processAllNotes(notes) {
-    this.synth.triggerAttackRelease(notes, '4n');
-    return notes;
-  }
-}
-
-/**
- * Keyboard Node
- *
- * Outputs the trigger's input number as MIDI note.
- */
-export class KeyboardNode extends MidiNode {
-  constructor(
-    public title: string = 'Keyboard Node'
-  ) {
-    super();
-    this.inputs = [];
-    this.addInput(
-      new NodeInput<Tone.Frequency[]>('Display Notes', this, this.showNotes.bind(this))
-    );
-  }
-
-  showNotes() {
-    this.inputs[0].value.map(note => {
-      document.querySelectorAll(`.key[data-note="${note.toMidi()}"]`).forEach(el => {
-        el.classList.add('active');
-        setTimeout(() => el.classList.remove('active'), 500);
-      });
-    });
-  }
-
-  onTrigger(value, active): void {
-    this.outputs[0].trigger([new Tone.Frequency(value, 'midi')], active);
   }
 }
