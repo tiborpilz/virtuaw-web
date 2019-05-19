@@ -11,17 +11,14 @@ export class NodeInput<T> implements NodeSocket<T> {
   constructor(
     public title: string = 'Input',
     public node: Node,
-    public defaultValue: T = null,
     public update,
   ) {
-    this.value = defaultValue;
     this.id = Math.random().toString(36).substr(2, 9);
   }
 
   socketType = 'input';
   id;
-  connections;
-  connection?: NodeConnection<T>;
+  connections = [];
   value: T;
   active: boolean;
 
@@ -32,9 +29,11 @@ export class NodeInput<T> implements NodeSocket<T> {
   }
 
   disconnect() {
-    this.node.onDisconnect(this.connection.from);
-    this.connection.from.disconnectInput(this);
-    delete this.connection;
+    this.connections.map(conn => {
+      this.node.onDisconnect(conn);
+      conn.from.disconnectInput(this);
+    });
+    this.connections = [];
   }
 }
 
@@ -50,12 +49,12 @@ export class NodeOutput<O> implements NodeSocket<O> {
   socketType = 'output';
   id: string;
 
-  connections: NodeConnection<O>[] = [];
+  connections = [];
   connectTo(target: NodeInput<O>): NodeOutput<O> {
+
     const connection = new NodeConnection<O>(this, target);
     this.connections.push(connection);
     target.connections.push(connection);
-    target.connection = connection;
 
     this.node.onConnect(this);
     target.node.onConnect(this);
@@ -87,17 +86,43 @@ export class NodeConnection<T> {
 type NodeInputs = NodeInput<any>[];
 type NodeOutputs = NodeOutput<any>[];
 
+export interface Node {
+  inputs: NodeInputs;
+  outputs: NodeOutputs;
+
+  onConnect: (socket: NodeSocket<any>) => void;
+  onDisconnect: (socker: NodeSocket<any>) => void;
+}
+
+
 /**
  * Node base class
  *
  * @param title: The Node's display title.
  */
-export class Node {
+export class MidiNode implements Node {
   constructor(
     public title: string = 'Node',
-    public inputs: NodeInputs = [],
-    public outputs: NodeOutputs = []
-  ) { }
+  ) {
+    this.addInput(
+      new NodeInput<Tone.Frequency[]>('Input Notes', this, this.update.bind(this))
+    );
+    this.addOutput(
+      new NodeOutput<Tone.Frequency[]>('Output Notes', this, this.processNotes.bind(this))
+    );
+  }
+
+  inputs = [];
+  outputs = [];
+
+  processNotes() {
+    const notes = this.inputs[0].value;
+    return notes.map((note) => this.processNote(note)).flat(Infinity);
+  }
+
+  processNote(note) {
+    return note;
+  }
 
   get connections() {
     const inputConnections = this.inputs.filter(input => input.connection).map(input => input.connection);
@@ -107,10 +132,11 @@ export class Node {
     return inputConnections.concat(outputConnections);
   }
 
-  update() {
+  update(input) {
     this.outputs.map(output => {
+      console.log(this.inputs);
       const value = output.process(this.inputs);
-      output.trigger(value);
+      output.trigger(value, true);
     });
     this.onUpdate();
   }
@@ -136,38 +162,6 @@ export class Node {
   }
 }
 
-/**
- * Note Node base class. Takes either single node or array and outputs array of notes.
- */
-class NoteNode extends Node {
-  constructor() {
-    super();
-    this.addInput(
-      new NodeInput<Tone.Frequency[]>('Input Notes', this, [60], this.update.bind(this))
-    );
-    this.addOutput(
-      new NodeOutput<Tone.Frequency[]>('Output Notes', this, this.processNotes.bind(this))
-    );
-  }
-
-  /**
-   * Calls processNote for every input element,
-   * or wraps output in array if input is single.
-   *
-   * @param input: Either a single note or an array of notes, called by trigger.
-   */
-  processNotes() {
-    const notes = this.inputs[0].value;
-    return notes.map((note) => this.processNote(note)).flat(Infinity);
-  }
-
-  /**
-   * Processes a single note - to be overwritten.
-   */
-  processNote(note) {
-    return note;
-  }
-}
 
 /**
  * Harmonize Node.
@@ -175,7 +169,7 @@ class NoteNode extends Node {
  *
  * @param intervals: The harmonization intervals in half-steps
  */
-export class HarmonizeNode extends NoteNode {
+export class HarmonizeNode extends MidiNode {
   constructor(
     public intervals: number[] = [0, 4, 7],
     public title: string = 'Harmonize Node'
@@ -198,7 +192,7 @@ export class HarmonizeNode extends NoteNode {
  *
  * @param intervals: The intervals to transpose the note(s) in half-steps
  */
-export class AddIntervalsNode extends NoteNode {
+export class AddIntervalsNode extends MidiNode {
   constructor(
     public intervals: number[] = [12],
     public title: string = 'Add Intervals Node'
@@ -212,7 +206,7 @@ export class AddIntervalsNode extends NoteNode {
   }
 }
 
-export class ArpeggiatorNode extends Node {
+export class ArpeggiatorNode extends MidiNode {
   constructor(
     public noteDuration: number = 100,
     public title: string = 'Arpeggiator Node',
@@ -270,7 +264,7 @@ export class ArpeggiatorNode extends Node {
  *
  * Outputs the input note(s) and triggers a synth attack as side-effect.
  */
-export class SynthNode extends NoteNode {
+export class SynthNode extends MidiNode {
   constructor(
     public title: string = 'Synth Node',
     public synth: Tone.Synth = new Tone.PolySynth().toMaster(),
@@ -278,20 +272,9 @@ export class SynthNode extends NoteNode {
     super();
   }
 
-  update() {
+  onUpdate() {
     const notes = this.inputs[0].value;
     this.synth.triggerAttackRelease(notes, '8n');
-
-    this.outputs.map(output => {
-      const value = output.process(this.inputs);
-      output.trigger(value, true);
-    });
-  }
-
-  onDisconnect(socket) {
-    if (socket.type === 'output' && socket.title === 'Audio Output') {
-      this.synth.disconnect();
-    }
   }
 }
 
@@ -300,14 +283,14 @@ export class SynthNode extends NoteNode {
  *
  * Outputs the trigger's input number as MIDI note.
  */
-export class KeyboardNode extends NoteNode {
+export class KeyboardNode extends MidiNode {
   constructor(
     public title: string = 'Keyboard Node'
   ) {
     super();
     this.inputs = [];
     this.addInput(
-      new NodeInput<Tone.Frequency[]>('Display Notes', this, [], this.showNotes.bind(this))
+      new NodeInput<Tone.Frequency[]>('Display Notes', this, this.showNotes.bind(this))
     );
   }
 
