@@ -94,7 +94,6 @@ export interface Node {
   onDisconnect: (socker: NodeSocket<any>) => void;
 }
 
-
 /**
  * Node base class
  *
@@ -105,22 +104,31 @@ export class MidiNode implements Node {
     public title: string = 'Node',
   ) {
     this.addInput(
-      new NodeInput<Tone.Frequency[]>('Input Notes', this, this.update.bind(this))
+      new NodeInput<Tone.Frequency[]>('Input Notes', this, this.updateOutputs.bind(this))
     );
     this.addOutput(
-      new NodeOutput<Tone.Frequency[]>('Output Notes', this, this.processNotes.bind(this))
+      new NodeOutput<Tone.Frequency[]>('Output Notes', this, this.processInputs.bind(this))
     );
   }
 
   inputs = [];
   outputs = [];
 
-  processNotes() {
-    const notes = this.inputs[0].value;
-    return notes.map((note) => this.processNote(note)).flat(Infinity);
+  processInputs() {
+    const values = this.inputs.map(input => input.value);
+    return this.handleInputValues(values);
   }
 
-  processNote(note) {
+  handleInputValues(values) {
+    const notes = values[0];
+    return this.processAllNotes(notes);
+  }
+
+  processAllNotes(notes) {
+    return notes.map((note) => this.processSingleNote(note)).flat(Infinity);
+  }
+
+  processSingleNote(note) {
     return note;
   }
 
@@ -132,7 +140,7 @@ export class MidiNode implements Node {
     return inputConnections.concat(outputConnections);
   }
 
-  update(input) {
+  updateOutputs(input) {
     this.outputs.map(output => {
       console.log(this.inputs);
       const value = output.process(this.inputs);
@@ -180,7 +188,7 @@ export class HarmonizeNode extends MidiNode {
   /**
    * Uses Tone.js for harmonization.
    */
-  processNote(note) {
+  processSingleNote(note) {
     const harmony = Tone.Midi(note).harmonize(this.intervals);
     return harmony;
   }
@@ -200,62 +208,9 @@ export class AddIntervalsNode extends MidiNode {
     super();
   }
 
-  processNote(note) {
+  processSingleNote(note) {
     const transposed = this.intervals.map(i => note.transpose(i));
     return [note].concat(...transposed);
-  }
-}
-
-export class ArpeggiatorNode extends MidiNode {
-  constructor(
-    public noteDuration: number = 100,
-    public title: string = 'Arpeggiator Node',
-  ) {
-    super();
-    this.addInput(
-      new NodeInput<Tone.Frequency[]>('Input Notes', this, [], this.update.bind(this))
-    );
-    this.addOutput(
-      new NodeOutput<Tone.Frequency[]>('Output Notes', this, this.processNotes.bind(this))
-    );
-    this.advanceNote();
-    this.noteGen = this.noteGenerator();
-  }
-
-  notes: Tone.MidiNote[] = [];
-  nextNote: Tone.MidiNote;
-  noteGen: IterableIterator<Tone.Frequency>;
-
-  *noteGenerator(): IterableIterator<Tone.Frequency> {
-    console.log('Iterator');
-    while (true) {
-      yield* [].concat(this.notes);
-    }
-  }
-
-  update() {
-    if (this.inputs[0].value) {
-      this.notes = this.inputs[0].value;
-    }
-    this.outputs[0].trigger([this.nextNote]);
-  }
-
-  advanceNote() {
-    if (this.notes.length > 0) {
-      this.nextNote = this.noteGen.next().value;
-    }
-    this.processNotes();
-    this.update();
-    // this.nextNote = Math.round(Math.random() * 20);
-    setTimeout(() => this.advanceNote(), this.noteDuration);
-  }
-
-  processNotes() {
-    return [this.nextNote];
-
-    // this.notes = inputNotes;
-
-    // return this.nextNote;
   }
 }
 

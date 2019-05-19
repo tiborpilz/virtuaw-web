@@ -10,7 +10,6 @@ import {
   HarmonizeNode,
   AddIntervalsNode,
   KeyboardNode,
-  ArpeggiatorNode
 } from './graphNodes';
 
 import { SocketConnectorService } from './socket-connector.service';
@@ -19,7 +18,6 @@ const keyboard = new KeyboardNode();
 const simpleSynth = new SynthNode('Simple Synth');
 const major = new HarmonizeNode([0, 4, 7], 'Harmonize Major');
 const minor = new HarmonizeNode([0, 3, 7], 'Harmonize Minor');
-const arpeggiator = new ArpeggiatorNode();
 
 
 @Component({
@@ -30,7 +28,7 @@ const arpeggiator = new ArpeggiatorNode();
 
 export class AppComponent implements OnInit {
   title = 'virtuaw-web';
-  graphNodes = [keyboard, major, minor, simpleSynth, arpeggiator];
+  graphNodes = [keyboard, major, minor, simpleSynth];
   graph: any;
   canvas: any;
   inputSlot = null;
@@ -43,37 +41,8 @@ export class AppComponent implements OnInit {
     []);
   }
 
-  get selectedNode() {
-    return [this.inputSlot, this.outputSlot].filter(s => s).map(s => s.node);
-  }
-  isConnecting(graphNode) {
-    return (this.selectedNode && 'connecting') + (this.selectedNode === graphNode && ' selected');
-  }
+  triggerSynth = (value, active) => keyboard.onTrigger(value, active);
 
-  triggerSynth = (value) => keyboard.onTrigger(value);
-
-  makeConnectionFrom = (output) => {
-    if (this.inputSlot) {
-      output.connectTo(this.inputSlot);
-      this.inputSlot = null;
-      return true;
-    }
-    this.outputSlot = output;
-    console.log(this.outputSlot, this.inputSlot);
-    return false;
-  }
-
-  makeConnectionTo = input => {
-    console.log(this.outputSlot);
-    if (this.outputSlot) {
-      this.outputSlot.connectTo(input);
-      this.outputSlot = null;
-      return true;
-    }
-    this.inputSlot = input;
-    console.log(this.outputSlot, this.inputSlot);
-    return false;
-  }
 
   debug() {
     console.log(this, this.connections);
