@@ -17,14 +17,12 @@ export class SocketComponent implements OnInit {
     y: number
   };
 
-  @HostListener('click', ['$event'])
   onClick(event) {
     console.log(event);
     event.stopPropagation();
     this.socket.disconnect();
   }
 
-  @HostListener('mousedown', ['$event'])
   onMousedown(event) {
     event.stopPropagation();
     this.service.startConnection(this.socket, event.target);

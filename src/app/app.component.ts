@@ -17,8 +17,9 @@ import { SocketConnectorService } from './socket-connector.service';
 
 const keyboard = new KeyboardNode();
 const simpleSynth = new SynthNode('Simple Synth');
-const major = new HarmonizeNode([0, 4, 7, 12, 15, 19, 28], 'Harmonize Major');
+const major = new HarmonizeNode([0, 4, 7], 'Harmonize Major');
 const minor = new HarmonizeNode([0, 3, 7], 'Harmonize Minor');
+const lydian = new HarmonizeNode([0, 3, 7, 13], 'Minor 13th');
 const arpeggiator = new ArpeggiatorNode(100, 5);
 
 

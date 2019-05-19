@@ -1,14 +1,21 @@
-<div>
-  <app-keyboard [onTrigger]="triggerSynth"></app-keyboard>
-  <button (click)="debug()">Debug</button>
-  <div class="graph-container">
-    <app-graph-node
-      *ngFor="let graphNode of graphNodes"
-      [graphNode]="graphNode"
-      [makeConnectionFrom]="makeConnectionFrom"
-      [makeConnectionTo]="makeConnectionTo"
-      cdkDrag>
-    </app-graph-node>
-    <app-graph-connections [connections]="connections"></app-graph-connections>
+<div class="main-container">
+  <header class="header header-6">
+  </header>
+  <nav class="subnav">
+    <button (click)="debug()">Debug</button>
+  </nav>
+  <div class="content-container">
+    <div class="content-area">
+    <app-keyboard [onTrigger]="triggerSynth"></app-keyboard>
+    <div class="graph-container">
+      <app-graph-node
+        *ngFor="let graphNode of graphNodes"
+        [graphNode]="graphNode"
+        [makeConnectionFrom]="makeConnectionFrom"
+        [makeConnectionTo]="makeConnectionTo"
+        cdkDrag>
+      </app-graph-node>
+      <app-graph-connections [connections]="connections"></app-graph-connections>
+    </div>
   </div>
 </div>

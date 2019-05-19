@@ -1,14 +1,4 @@
 :host {
-  position: relative;
-  display: inline-block;
-  height: 20px;
-
-  .label {
-    display: inline-block;
-    height: 20px;
-    font-size: 16px;
-  }
-
   .socket {
     position: absolute;
     display: inline-block;
@@ -22,16 +12,16 @@
     .socket {
       left: 0;
     }
-    .label {
-      margin-left: 28px;
+    .socket-title {
+      margin-left: 20px;
     }
   }
   &.output {
     .socket {
       right: 0;
     }
-    .label {
-      margin-right: 28px;
+    .socket-title {
+      margin-right: 20px;
     }
   }
 }

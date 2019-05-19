@@ -1,5 +1,7 @@
 <div class="socket"
      [attr.id]="socket.socketType+'_'+socket.id"
-     [attr.title]="socket.title">
+     [attr.title]="socket.title"
+     (mousedown)="onMousedown($event)"
+     (click)="onClick($event)">
 </div>
-<span class="label">{{socket.title}}</span>
+<span class="socket-title">{{socket.title}}</span>
