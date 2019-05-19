@@ -41,7 +41,7 @@ export class NodeOutput<O> implements NodeSocket<O> {
   constructor(
     public title: string = 'Output',
     public node: Node,
-    public process: (inputs: NodeInput<any>[]) => O = () => null,
+    public processInputs: (inputs: NodeInput<any>[]) => O = () => null,
   ) {
     this.id = Math.random().toString(36).substr(2, 9);
   }
@@ -143,7 +143,7 @@ export class MidiNode implements Node {
   updateOutputs(input) {
     this.outputs.map(output => {
       console.log(this.inputs);
-      const value = output.process(this.inputs);
+      const value = output.processInputs(this.inputs);
       output.trigger(value, true);
     });
     this.onUpdate();
