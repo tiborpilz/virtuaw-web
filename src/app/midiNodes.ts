@@ -132,13 +132,13 @@ export class SynthNode extends MidiNode {
   }
 
   handleInputValues(values) {
-    console.log(this);
     this.processAllNotes(values[0]);
     if (values[1]) {
       this.synth.set({
         envelope: values[1]
       });
     }
+    return values[0];
   }
 
   processAllNotes(notes) {
