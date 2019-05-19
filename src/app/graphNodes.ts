@@ -214,6 +214,27 @@ export class AddIntervalsNode extends MidiNode {
   }
 }
 
+export class ArpeggiatorNode extends MidiNode {
+  constructor(
+    public title: string = 'Arpeggiator Node',
+    public duration: number = 1000
+  ) {
+    super();
+  }
+
+  processAllNotes(notes) {
+    if (!notes || notes.length === 0) {
+      return [];
+    }
+    console.log('processing');
+
+    const note = notes.pop();
+    this.outputs[0].trigger([note]);
+    setTimeout(() => this.processAllNotes(notes), this.duration);
+    return [];
+  }
+}
+
 /**
  * Synth Node
  *
@@ -227,9 +248,9 @@ export class SynthNode extends MidiNode {
     super();
   }
 
-  onUpdate() {
-    const notes = this.inputs[0].value;
-    this.synth.triggerAttackRelease(notes, '8n');
+  processAllNotes(notes) {
+    this.synth.triggerAttackRelease(notes, '4n');
+    return notes;
   }
 }
 

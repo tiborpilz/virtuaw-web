@@ -10,6 +10,7 @@ import {
   HarmonizeNode,
   AddIntervalsNode,
   KeyboardNode,
+  ArpeggiatorNode
 } from './graphNodes';
 
 import { SocketConnectorService } from './socket-connector.service';
@@ -18,6 +19,7 @@ const keyboard = new KeyboardNode();
 const simpleSynth = new SynthNode('Simple Synth');
 const major = new HarmonizeNode([0, 4, 7], 'Harmonize Major');
 const minor = new HarmonizeNode([0, 3, 7], 'Harmonize Minor');
+const arpeggiator = new ArpeggiatorNode();
 
 
 @Component({
@@ -28,7 +30,7 @@ const minor = new HarmonizeNode([0, 3, 7], 'Harmonize Minor');
 
 export class AppComponent implements OnInit {
   title = 'virtuaw-web';
-  graphNodes = [keyboard, major, minor, simpleSynth];
+  graphNodes = [keyboard, major, minor, arpeggiator, simpleSynth];
   graph: any;
   canvas: any;
   inputSlot = null;
