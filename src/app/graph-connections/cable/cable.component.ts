@@ -10,7 +10,7 @@ export class CableComponent implements OnInit {
 
   @Input() endPos: { x: 0, y: 0 };
 
-  elasticity = 0.9;
+  elasticity = 0.2;
 
   get qPos() {
     const { x: sX, y: sY } = this.startPos;
