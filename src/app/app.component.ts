@@ -3,19 +3,9 @@ import Tone from 'tone';
 // import { LGraph, LGraphCanvas, LiteGraph } from 'litegraph.js';
 import { LiteGraph } from 'litegraph.js';
 
-import {
-  NodeInput,
-  NodeOutput
-} from './graphNodes';
+import * as graphNode from './graphNodes';
 
 import * as midiNode from './midiNodes';
-// import {
-//   SynthNode,
-//   HarmonizeNode,
-//   AddIntervalsNode,
-//   KeyboardNode,
-//   ArpeggiatorNode
-// } from './midiNode';
 
 import { SocketConnectorService } from './socket-connector.service';
 
@@ -53,7 +43,12 @@ export class AppComponent implements OnInit {
     'Simple Synth': midiNode.SynthNode,
     Harmonize: midiNode.HarmonizeNode,
     Arpeggiator: midiNode.ArpeggiatorNode,
-    Envelope: midiNode.EnvelopeNode
+    Envelope: midiNode.EnvelopeNode,
+    NumberNode: graphNode.NumberNode,
+    StringNode: graphNode.StringNode,
+    SumNode: graphNode.SumNode,
+    MultNode: graphNode.MultNode,
+    SqrtNode: graphNode.SqrtNode
   };
 
   get nodeNames() {

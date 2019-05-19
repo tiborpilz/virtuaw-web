@@ -91,20 +91,20 @@ export class NodeConnection<T> {
 type NodeInputs = NodeInput<any>[];
 type NodeOutputs = NodeOutput<any>[];
 
-export interface Node {
-  inputs: NodeInputs;
-  outputs: NodeOutputs;
+// export interface Node {
+//   inputs: NodeInputs;
+//   outputs: NodeOutputs;
 
-  onConnect: (socket: NodeSocket<any>) => void;
-  onDisconnect: (socker: NodeSocket<any>) => void;
-}
+//   onConnect: (socket: NodeSocket<any>) => void;
+//   onDisconnect: (socker: NodeSocket<any>) => void;
+// }
 
 /**
  * Node base class
  *
  * @param title: The Node's display title.
  */
-export class BaseNode implements Node {
+export abstract class BaseNode {
 
   inputs = [];
   outputs = [];
@@ -127,6 +127,7 @@ export class BaseNode implements Node {
     return inputConnections.concat(outputConnections);
   }
 
+  // TODO: Handle selective triggering
   updateOutputs(input) {
     this.outputs.map(output => {
       const value = output.processInputs(this.inputs);
@@ -170,14 +171,46 @@ export class BaseNode implements Node {
   }
 }
 
-class ConstNode<T> extends BaseNode {
+abstract class ConstNode<T> extends BaseNode {
   constructor(
     public title = 'Constant',
     public outputCount = 1
   ) {
     super();
+    this.addInput<T>({
+      node: this, updateOutputs: this.updateOutputs.bind(this), allowInput: true
+    });
     Array.from(new Array(this.outputCount)).map(_ => this.addOutput<T>({
       node: this, processInputs: this.processInputs.bind(this)
     }));
   }
+}
+
+export class NumberNode extends ConstNode<number> { }
+export class StringNode extends ConstNode<string> { }
+
+abstract class FunctionNode<I, O> extends BaseNode {
+  inputs: NodeInput<I>[];
+  outputs: NodeOutput<O>[];
+  proccessFunction: (arg: I|I[]) => O;
+
+  processInputs() {
+    return this.inputs.map(input => this.proccessFunction(input.value));
+  }
+}
+
+abstract class MathNode extends FunctionNode<number, number> {
+  processFunction: (a: number|number[], b?: number) => number;
+}
+
+export class SumNode extends MathNode {
+  processFunction = (a: number, b: number) => a + b;
+}
+
+export class MultNode extends FunctionNode<number, number> {
+  processFunction = (a: number, b: number) => a * b;
+}
+
+export class SqrtNode extends FunctionNode<number, number> {
+  processFunction = (a: number) => Math.sqrt(a);
 }
