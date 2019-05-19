@@ -3,13 +3,22 @@
     {{graphNode.title}}
   </div>
   <div class="card-block">
+
     <div class="interface inputs">
       <div class="card-title">Inputs</div>
-      <app-socket class="input" *ngFor="let input of graphNode.inputs" [socket]="input"></app-socket>
+      <app-socket
+        *ngFor="let input of graphNode.inputs"
+        class="input" [socket]="input"
+        ></app-socket>
     </div>
+
     <div class="interface outputs">
       <div class="card-title">Outputs</div>
-      <app-socket class="output" *ngFor="let output of graphNode.outputs" [socket]="output"></app-socket>
+      <app-socket
+        *ngFor="let output of graphNode.outputs"
+        class="output" [socket]="output"
+        ></app-socket>
     </div>
+
   </div>
 </div>

@@ -6,15 +6,42 @@ export class MidiNode extends BaseNode {
     public title: string = 'Node',
   ) {
     super();
-    this.addInput(
-      new NodeInput<Tone.Frequency[]>('Input Notes', this, this.updateOutputs.bind(this))
-    );
-    this.addOutput(
-      new NodeOutput<Tone.Frequency[]>('Output Notes', this, this.processInputs.bind(this))
-    );
+    this.addInput<Tone.Frequency[]>({
+      node: this,
+      updateOutputs: this.updateOutputs.bind(this),
+      title: 'Input Notes'
+    });
+    this.addOutput<Tone.Frequency[]>({
+      node: this,
+      processInputs: this.processInputs.bind(this),
+      title: 'Output Notes'
+    });
+  }
+
+  addInput<T>({
+    node,
+    updateOutputs = this.updateOutputs.bind(this),
+    title = 'Input Notes',
+    defaultValue = null,
+    allowInput = false
+  }) {
+
+    this.inputs.push(new NodeInput<T>(
+      title, node, updateOutputs, defaultValue, allowInput
+    ));
+  }
+
+  addOutput<T>({
+    node,
+    processInputs = this.processInputs.bind(this),
+    title = 'Output Notes'
+  }) {
+
+    this.outputs.push(new NodeOutput<T>(title, node, processInputs));
   }
 
   handleInputValues(values) {
+    console.log('handling');
     const notes = values[0];
     return this.processAllNotes(notes);
   }
@@ -80,12 +107,17 @@ export class ArpeggiatorNode extends MidiNode {
     public title: string = 'Arpeggiator Node'
   ) {
     super();
-    this.addInput(
-      new NodeInput<number>('Duration', this, this.updateOutputs.bind(this), duration)
-    );
-    this.addInput(
-      new NodeInput<number>('Repeats', this, this.updateOutputs.bind(this), repeats)
-    );
+    this.addInput({
+      node: this,
+      title: 'Duration',
+      defaultValue: duration
+    });
+    this.addInput({
+      node: this,
+      title: 'Repeats',
+      updateOutputs: this.updateOutputs.bind(this),
+      defaultValue: repeats
+    });
   }
 
   handleInputValues(values) {
@@ -97,7 +129,6 @@ export class ArpeggiatorNode extends MidiNode {
 
     const repeats = values[2];
     this.repeats = repeats;
-    // return notes;
   }
 
   processAllNotes(notes) {
@@ -130,9 +161,10 @@ export class SynthNode extends MidiNode {
     public synth: Tone.Synth = new Tone.PolySynth().toMaster(),
   ) {
     super();
-    this.addInput(
-      new NodeInput<Tone.Envelope>('Envelope', this, this.updateOutputs.bind(this))
-    );
+    this.addInput({
+      node: this,
+      title: 'Envelope'
+    });
   }
 
   handleInputValues(values) {
@@ -162,9 +194,11 @@ export class KeyboardNode extends MidiNode {
   ) {
     super();
     this.inputs = [];
-    this.addInput(
-      new NodeInput<Tone.Frequency[]>('Display Notes', this, this.showNotes.bind(this))
-    );
+    this.addInput({
+      node: this,
+      updateOutputs: this.showNotes.bind(this),
+      title: 'Display Notes'
+    });
   }
 
   showNotes() {
@@ -189,29 +223,44 @@ export class KeyboardNode extends MidiNode {
  */
 export class EnvelopeNode extends BaseNode {
   constructor(
-    public attack: number = 2.51,
+    public attack: number = 0.2,
     public decay: number = 0.1,
     public sustain: number = 0.5,
     public release: number = 1,
     public title: string = 'Envelope Node'
   ) {
-    super();
-    this.addInput(
-      new NodeInput<number>('Attack', this, this.updateOutputs.bind(this), attack, true)
-    );
-    this.addInput(
-      new NodeInput<number>('Decay', this, this.updateOutputs.bind(this), decay, true)
-    );
-    this.addInput(
-      new NodeInput<number>('Sustain', this, this.updateOutputs.bind(this), sustain, true)
-    );
-    this.addInput(
-      new NodeInput<number>('Release', this, this.updateOutputs.bind(this), release, true)
-    );
 
-    this.addOutput(
-      new NodeOutput<object>('Envelope', this, this.processInputs.bind(this))
-    );
+    super();
+    this.addInput({
+      node: this,
+      title: 'Attack',
+      defaultValue: attack,
+      allowInput: true
+    });
+    this.addInput({
+      node: this,
+      title: 'Decay',
+      defaultValue: decay,
+      allowInput: true
+    });
+    this.addInput({
+      node: this,
+      title: 'Sustain',
+      defaultValue: sustain,
+      allowInput: true
+    });
+    this.addInput({
+      node: this,
+      title: 'Release',
+      defaultValue: release,
+      allowInput: true
+    });
+
+    this.addOutput({
+      node: this,
+      processInputs: this.processInputs.bind(this),
+      title: 'Envelope'
+    });
 
     this.envelope = { attack, decay, sustain, release };
     this.outputs[0].trigger(this.envelope, true);

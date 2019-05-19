@@ -6,12 +6,11 @@ export interface NodeSocket<T> {
   connections: NodeConnection<T>[];
 }
 
-
 export class NodeInput<T> implements NodeSocket<T> {
   constructor(
     public title: string = 'Input',
     public node: Node,
-    public update,
+    public updateOutputs,
     public defaultValue: T = null,
     public allowInput: boolean = false,
   ) {
@@ -30,7 +29,7 @@ export class NodeInput<T> implements NodeSocket<T> {
     this.active = active;
 
     if (this.value && active) {
-      this.update(this);
+      this.updateOutputs(this);
     }
   }
 
@@ -140,12 +139,26 @@ export class BaseNode implements Node {
     return;
   }
 
-  addInput(input) {
-    this.inputs.push(input);
+  addInput<T>({
+    node,
+    updateOutputs = this.updateOutputs.bind(this),
+    title = 'Input',
+    defaultValue = null,
+    allowInput = false
+  }) {
+
+    this.inputs.push(new NodeInput<T>(
+      title, node, updateOutputs, defaultValue, allowInput
+    ));
   }
 
-  addOutput(output) {
-    this.outputs.push(output);
+  addOutput<T>({
+    node,
+    processInputs = this.processInputs.bind(this),
+    title = 'Output'
+  }) {
+
+    this.outputs.push(new NodeOutput<T>(title, node, processInputs));
   }
 
   onConnect(socket: NodeSocket<any>) {
@@ -163,10 +176,8 @@ class ConstNode<T> extends BaseNode {
     public outputCount = 1
   ) {
     super();
-    for (let i = 0; i < this.outputCount; i++) {
-      this.addOutput(
-        new NodeOutput<T>('Output', this, this.updateOutputs.bind(this))
-      );
-    }
+    Array.from(new Array(this.outputCount)).map(_ => this.addOutput<T>({
+      node: this, processInputs: this.processInputs.bind(this)
+    }));
   }
 }

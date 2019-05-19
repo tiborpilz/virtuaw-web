@@ -5,7 +5,6 @@ import { FormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
 import { KeyboardComponent } from './keyboard/keyboard.component';
-import { KeyComponent } from './keyboard/key/key.component';
 import { GraphNodeComponent } from './graph-node/graph-node.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { SocketComponent } from './graph-node/socket/socket.component';
@@ -16,7 +15,6 @@ import { CableComponent } from './graph-connections/cable/cable.component';
   declarations: [
     AppComponent,
     KeyboardComponent,
-    KeyComponent,
     GraphNodeComponent,
     SocketComponent,
     GraphConnectionsComponent,

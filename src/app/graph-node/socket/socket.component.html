@@ -4,7 +4,5 @@
      (mousedown)="onMousedown($event)"
      (click)="onClick($event)">
 </div>
-<form clrForm *ngIf="socket.allowInput">
-    <input (keyup)="onKey($event)" placeholder="My input" name="input" [(ngModel)]="socket.value" />
-</form>
+<input *ngIf="socket.allowInput" (keyup)="onKey($event)" placeholder="My input" name="input" [(ngModel)]="socket.value" />
 <span class="socket-title">{{socket.title}}</span>
