@@ -91,20 +91,20 @@ export class NodeConnection<T> {
 type NodeInputs = NodeInput<any>[];
 type NodeOutputs = NodeOutput<any>[];
 
-// export interface Node {
-//   inputs: NodeInputs;
-//   outputs: NodeOutputs;
+export interface Node {
+  inputs: NodeInputs;
+  outputs: NodeOutputs;
 
-//   onConnect: (socket: NodeSocket<any>) => void;
-//   onDisconnect: (socker: NodeSocket<any>) => void;
-// }
+  onConnect: (socket: NodeSocket<any>) => void;
+  onDisconnect: (socker: NodeSocket<any>) => void;
+}
 
 /**
  * Node base class
  *
  * @param title: The Node's display title.
  */
-export abstract class BaseNode {
+export abstract class BaseNode implements Node {
 
   inputs = [];
   outputs = [];
