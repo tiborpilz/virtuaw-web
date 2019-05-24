@@ -871,6 +871,23 @@
     lodash "^4.17.11"
     to-fast-properties "^2.0.0"
 
+"@clr/angular@^1.1.3":
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/@clr/angular/-/angular-1.1.3.tgz#00c4c0ea6ef3aa8d9a14204f2702d43fabf430c8"
+  integrity sha512-k3G5WGBQnmGkeD5rItHT9MQn2+p+jDTO2u5hiExANKG+HosRsX2D49y0tW1uKm0J/0L0sFZ9OZj8SKTJP36hKQ==
+  dependencies:
+    tslib "^1.9.0"
+
+"@clr/icons@^1.1.3":
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/@clr/icons/-/icons-1.1.3.tgz#0154d3085528b568010ff10a9116c2e08448304b"
+  integrity sha512-UvTtQh8RBovHPmb9JzpYQKumuIkWF+ZkNsOGDxPlfFrDnabdGRYmiN/hBYY+aP49KFKDdJf9ucQteVGVo0Nz8Q==
+
+"@clr/ui@^1.1.3":
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/@clr/ui/-/ui-1.1.3.tgz#b736ead16ced97938370090694cc4da64601b2f8"
+  integrity sha512-0H3/6YeVltmS3a0cNG8TyOB7nRhpHjVtzTSC06hmk2/cp4x14XPHdHabV1gwWq1ZXfGb5cLDRBb2cjWb546sKQ==
+
 "@emotion/babel-utils@^0.6.4":
   version "0.6.10"
   resolved "https://registry.yarnpkg.com/@emotion/babel-utils/-/babel-utils-0.6.10.tgz#83dbf3dfa933fae9fc566e54fbb45f14674c6ccc"
@@ -1859,6 +1876,11 @@
     "@webassemblyjs/ast" "1.8.5"
     "@webassemblyjs/wast-parser" "1.8.5"
     "@xtuc/long" "4.2.2"
+
+"@webcomponents/custom-elements@^1.2.4":
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/@webcomponents/custom-elements/-/custom-elements-1.2.4.tgz#7074543155396114617722724d6f6cb7b3800a14"
+  integrity sha512-WiTlgz6/kuwajYIcgyq64rSlCtb2AvbxwwrExP3wr6rKbJ72I3hi/sb4KdGUumfC+isDn2F0btZGk4MnWpyO1Q==
 
 "@xtuc/ieee754@^1.2.0":
   version "1.2.0"
@@ -3622,7 +3644,7 @@ core-js@^1.0.0:
   resolved "https://registry.yarnpkg.com/core-js/-/core-js-1.2.7.tgz#652294c14651db28fa93bd2d5ff2983a4f08c636"
   integrity sha1-ZSKUwUZR2yj6k70tX/KYOk8IxjY=
 
-core-js@^2.2.0, core-js@^2.4.0, core-js@^2.5.4, core-js@^2.5.7, core-js@^2.6.5:
+core-js@^2.2.0, core-js@^2.4.0, core-js@^2.5.7, core-js@^2.6.5:
   version "2.6.5"
   resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.6.5.tgz#44bc8d249e7fb2ff5d00e0341a7ffb94fbf67895"
   integrity sha512-klh/kDpwX8hryYL14M9w/xei6vrv6sE8gTHDG7/T/+SEovB/G4ejwcfE/CBzO6Edsu+OETZMZ3wcX/EjUkrl5A==
@@ -9478,7 +9500,7 @@ rxjs@6.3.3:
   dependencies:
     tslib "^1.9.0"
 
-rxjs@^6.1.0, rxjs@^6.3.3, rxjs@^6.4.0:
+rxjs@^6.1.0, rxjs@^6.4.0, rxjs@^6.5.2:
   version "6.5.2"
   resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-6.5.2.tgz#2e35ce815cd46d84d02a209fb4e5921e051dbec7"
   integrity sha512-HUb7j3kvb7p7eCUHE3FqjoDsC1xfZQ4AHFWfTKSpZ+sAhhz5X1WX0ZuUqWbzB2QhSLp3DoLUG+hMdEDKqWo2Zg==
@@ -10720,7 +10742,7 @@ tsconfig-paths@^3.4.0:
     minimist "^1.2.0"
     strip-bom "^3.0.0"
 
-tslib@^1.7.1, tslib@^1.8.0, tslib@^1.8.1, tslib@^1.9.0:
+tslib@^1.7.1, tslib@^1.8.0, tslib@^1.8.1, tslib@^1.9.0, tslib@^1.9.3:
   version "1.9.3"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.9.3.tgz#d7e4dd79245d85428c4d7e4822a79917954ca286"
   integrity sha512-4krF8scpejhaOgqzBEcGM7yDIEfi0/8+8zDRZhNZZ2kjmHJ4hv3zCbQWxoJGz1iw5U0Jl0nma13xzHXcncMavQ==
