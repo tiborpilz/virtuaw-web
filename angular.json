@@ -4,7 +4,7 @@
   "newProjectRoot": "projects",
   "projects": {
     "virtuaw-web": {
-      "root": "",
+      "root": "virtuaw-web",
       "sourceRoot": "src",
       "projectType": "application",
       "prefix": "app",
