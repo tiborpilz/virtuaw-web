@@ -1,6 +1,10 @@
-pipeline:
-  test:
-    image: node
-    commands:
-      - npm install
-      - npm run test
+kind: pipeline
+type: node
+name: default
+
+steps:
+- name: test
+  image: node
+  commands:
+    - npm install
+    - npm run test
