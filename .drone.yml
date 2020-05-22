@@ -1,5 +1,5 @@
 kind: pipeline
-type: node
+type: kubernetes
 name: default
 
 steps:
